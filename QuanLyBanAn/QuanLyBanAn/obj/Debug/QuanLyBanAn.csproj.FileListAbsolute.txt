@@ -1,0 +1,17 @@
+D:\QuanLyBanAn\QuanLyBanAn\bin\Debug\QuanLyBanAn.exe.config
+D:\QuanLyBanAn\QuanLyBanAn\bin\Debug\QuanLyBanAn.exe
+D:\QuanLyBanAn\QuanLyBanAn\bin\Debug\QuanLyBanAn.pdb
+D:\QuanLyBanAn\QuanLyBanAn\bin\Debug\Guna.UI2.dll
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.csproj.AssemblyReference.cache
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Form1.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Properties.Resources.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.csproj.GenerateResource.cache
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.csproj.CoreCompileInputs.cache
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.csproj.CopyComplete
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.exe
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.pdb
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Menu.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Signup.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Form2.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Form4.resources
+D:\QuanLyBanAn\QuanLyBanAn\obj\Debug\QuanLyBanAn.Form3.resources
