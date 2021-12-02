@@ -1,0 +1,885 @@
+bài tâp 8
+﻿CREATE DATABASE BT8
+GO
+
+USE BT8
+GO
+
+CREATE TABLE DMPHONG(
+MAPH NCHAR(10),
+TENPH NVARCHAR(40),
+PRIMARY KEY (MAPH)
+)
+GO
+
+CREATE TABLE DMTAISAN(
+MATS NCHAR(10),
+TENTS NVARCHAR(40),
+DONVI NVARCHAR(20),
+GIA INT,
+PRIMARY KEY (MATS)
+)
+GO
+
+CREATE TABLE PHANPHOI(
+MATS NCHAR(10),
+MAPH NCHAR(10),
+SOLUONG INT,
+NGAYPHANPHOI DATETIME,
+GHICHU NVARCHAR(100),
+PRIMARY KEY (MATS,MAPH)
+)
+GO
+
+INSERT INTO DMPHONG(MAPH,TENPH)
+VALUES ('PG1',N'PHONG LT 1')
+INSERT INTO DMPHONG(MAPH,TENPH)
+VALUES ('PG2',N'PHONG LT 2')
+INSERT INTO DMPHONG(MAPH,TENPH)
+VALUES ('PG3',N'PHONG LT 3')
+GO
+
+INSERT INTO DMTAISAN(MATS,TENTS,DONVI,GIA)
+VALUES ('TS1','TAI LIEU',N'DONG',100000)
+INSERT INTO DMTAISAN(MATS,TENTS,DONVI,GIA)
+VALUES ('TS2','VAT DE VO',N'DOLAR',500)
+INSERT INTO DMTAISAN(MATS,TENTS,DONVI,GIA)
+VALUES ('TS3','DO AN',N'DONG',150000)
+GO
+
+INSERT INTO PHANPHOI(MATS,MAPH,SOLUONG,NGAYPHANPHOI,GHICHU)
+VALUES ('TS1','PG1',4,'1973-02-15',N'25/3 Lạc Long Quân, Q.10,TP HCM')
+INSERT INTO PHANPHOI(MATS,MAPH,SOLUONG,NGAYPHANPHOI,GHICHU)
+VALUES ('TS2','PG2',1,'1959-06-20',N'215 Lý Thường Kiệt,TP Biên Hòa')
+INSERT INTO PHANPHOI(MATS,MAPH,SOLUONG,NGAYPHANPHOI,GHICHU)
+VALUES ('TS3','PG3',10,'1976-06-05',N'234 3/2, TP Biên Hòa')
+GO
+
+
+
+CREATE PROC SP_LKDSTAISAN
+@TENPH NVARCHAR(40)
+AS
+BEGIN	
+SELECT DMPHONG.MAPH, DMPHONG.TENPH,DMTAISAN.MATS,DMTAISAN.DONVI,DMTAISAN.GIA,DMTAISAN.TENTS,PHANPHOI.MAPH,PHANPHOI.MATS 
+FROM DMPHONG,DMTAISAN,PHANPHOI
+WHERE PHANPHOI.MATS=DMTAISAN.MATS AND PHANPHOI.MAPH=DMPHONG.MAPH AND DMPHONG.TENPH = @TENPH
+END;
+GO
+SP_LKDSTAISAN N'PHONG LT 1'
+GO
+
+CREATE PROC SP_LKDSPHONG
+@TENTS NVARCHAR(40)
+AS
+BEGIN
+SELECT DMTAISAN.TENTS, DMPHONG.MAPH, DMPHONG.TENPH
+FROM DMPHONG,DMTAISAN,PHANPHOI
+WHERE DMTAISAN.MATS=PHANPHOI.MATS AND DMPHONG.MAPH=PHANPHOI.MAPH AND DMTAISAN.TENTS=@TENTS
+END;
+GO
+SP_LKDSPHONG 'TAI LIEU'
+GO
+
+CREATE TRIGGER TR_KTDONGIA ON DMTAISAN
+FOR INSERT
+AS
+BEGIN
+DECLARE @a INT=0;
+SELECT @a = a.GIA FROM DMTAISAN a
+INNER JOIN inserted b ON a.GIA = b.GIA
+WHERE b.GIA <0
+BEGIN
+PRINT N'Dữ liệu không hợp lệ'
+ROLLBACK TRAN
+END
+END
+GO
+
+DROP TRIGGER TR_KTDONGIA
+GO
+
+INSERT INTO DMTAISAN(MATS,TENTS,DONVI,GIA)
+VALUES ('TS4','TAI LIEU',N'DONG',-11)
+GO
+---------------------------------------------------------------------------------
+bài tập 9
+ CREATE DATABASE BT9
+GO
+
+USE BT9
+GO
+
+CREATE TABLE GIANGVIEN(
+MAGV NCHAR(10),
+TENGV NVARCHAR(40),
+DIACHI NCHAR(40),
+SDT NCHAR(20),
+PRIMARY KEY (MAGV)
+)
+GO
+
+CREATE TABLE HOCVI(
+MAHV NCHAR(10),
+TENHV NVARCHAR(40),
+PRIMARY KEY (MAHV)
+)
+GO
+
+CREATE TABLE CHUYENNGHANH(
+MACN NCHAR(10),
+TENCN NVARCHAR(40),
+PRIMARY KEY (MACN)
+)
+GO
+
+CREATE TABLE GV_HV_CN(
+MAGV NCHAR(10),
+MAHV NCHAR(10),
+MACN NCHAR(10),
+NAMDATHV NCHAR(10),
+)
+GO
+
+alter table dbo.GV_HV_CN add foreign key (MAGV) references dbo.GIANGVIEN
+alter table dbo.GV_HV_CN add foreign key (MAHV) references dbo.HOCVI
+alter table dbo.GV_HV_CN add foreign key (MACN) references dbo.CHUYENNGHANH
+
+INSERT INTO GIANGVIEN(MAGV,TENGV,DIACHI,SDT)
+VALUES ('01',N'LÊ TRẦN MINH HIỀN','5C','0909571444')
+INSERT INTO GIANGVIEN(MAGV,TENGV,DIACHI,SDT)
+VALUES ('02',N'LÊ ÂU HẢI','5D','0909571466')
+INSERT INTO GIANGVIEN(MAGV,TENGV,DIACHI,SDT)
+VALUES ('03',N'LÊ GIA MINH','5E','0909571488')
+
+INSERT INTO HOCVI(MAHV,TENHV)
+VALUES ('01',N'TIẾN SĨ')
+INSERT INTO HOCVI(MAHV,TENHV)
+VALUES ('02',N'GIÁO SƯ')
+INSERT INTO HOCVI(MAHV,TENHV)
+VALUES ('03',N'THẠC SĨ')
+
+INSERT INTO CHUYENNGHANH(MACN,TENCN)
+VALUES ('01',N'CNTT')
+INSERT INTO CHUYENNGHANH(MACN,TENCN)
+VALUES ('02',N'TÀI CHÍNH KINH TẾ')
+INSERT INTO CHUYENNGHANH(MACN,TENCN)
+VALUES ('03',N'PHÁP LUẬT')
+
+INSERT INTO GV_HV_CN(MAGV,MAHV,MACN,NAMDATHV)
+VALUES ('01','01','01','2001')
+INSERT INTO GV_HV_CN(MAGV,MAHV,MACN,NAMDATHV)
+VALUES ('02','02','02','2002')
+INSERT INTO GV_HV_CN(MAGV,MAHV,MACN,NAMDATHV)
+VALUES ('03','03','03','2003')
+
+--câu 2
+create proc PC_NAM(@NAM nchar(10))
+as
+begin
+select * from GIANGVIEN,HOCVI,GV_HV_CN
+where GIANGVIEN.MAGV=GV_HV_CN.MAGV and  HOCVI.MAHV=GV_HV_CN.MAHV and HOCVI.MAHV in
+(
+select MaHV=@NAM from HOCVI 
+where HOCVI.TENHV = N'TIẾN SĨ' 
+)
+end
+go
+PC_NAM '01'
+GO
+
+DROP PROCEDURE PC_NAM
+
+--Câu 3
+create proc PC_TenHV(@TenHV nchar(10))
+as
+begin
+select * from GIANGVIEN,HOCVI,GV_HV_CN
+where GIANGVIEN.MAGV=GV_HV_CN.MAGV and  HOCVI.MAHV=GV_HV_CN.MAHV and HOCVI.TENHV=@TenHV
+end
+go
+PC_TenHV '01'
+GO
+
+--Câu 4
+CREATE TRIGGER TR_KT ON GV_HV_CN
+FOR INSERT
+AS
+BEGIN
+DECLARE @a INT=0;
+SELECT @a = a.NAMDATHV FROM GV_HV_CN a
+INNER JOIN inserted b ON a.NAMDATHV = b.NAMDATHV
+WHERE b.NAMDATHV <0
+BEGIN
+PRINT N'Dữ liệu không hợp lệ'
+ROLLBACK TRAN
+END
+END
+GO
+
+drop trigger TR_KT 
+
+------------------------------------------------------------------------------------
+
+ bài  tâp 7
+CREATE DATABASE baitap7
+GO
+
+USE baitap7
+GO
+
+CREATE TABLE NHANVIEN
+(
+	MANV NCHAR(5),
+	HOTEN NVARCHAR(50),
+	NGAYSINH DATE,
+	GIOITINH NCHAR(5),
+	PRIMARY KEY (MANV)
+)
+GO
+
+CREATE TABLE DUAN
+(
+	MADA NCHAR(5),
+	TENDA NCHAR(20),
+	NGANSACH INT,
+	PRIMARY KEY (MADA)
+)
+GO
+
+CREATE TABLE THAMGIA
+(
+	MADA NCHAR(5),
+	MANV NCHAR(5),
+	ThoigianBĐ DATE,
+	ThoigianKT DATE,
+	PRIMARY KEY (MADA,MaNV)
+)
+GO
+
+ALTER TABLE dbo.THAMGIA ADD FOREIGN KEY (MaDA) references dbo.DUAN
+
+ALTER TABLE dbo.THAMGIA ADD FOREIGN KEY (MaNV) references dbo.NHANVIEN
+
+INSERT INTO NHANVIEN(MANV,HOTEN,NGAYSINH,GIOITINH)
+VALUES ('N1',N'NGUYEN A','1999-1-1','NAM')
+INSERT INTO NHANVIEN(MANV,HOTEN,NGAYSINH,GIOITINH)
+VALUES ('N2',N'NGUYEN B','1999-1-14','NAM')
+
+INSERT INTO DUAN(MADA,TENDA,NGANSACH)
+VALUES ('DA1','DuAn1',100)
+INSERT INTO DUAN(MADA,TENDA,NGANSACH)
+VALUES ('DA2','DuAn2',1000)
+
+INSERT INTO THAMGIA(MADA,MANV,ThoigianBĐ,ThoigianKT)
+VALUES ('DA1','N1','2021-6-23','2021-7-23')
+INSERT INTO THAMGIA(MADA,MANV,ThoigianBĐ,ThoigianKT)
+VALUES ('DA2','N2','2021-7-23','2021-8-23')
+
+CREATE PROC PC_TenDoAn 
+(@TENDA NCHAR(20))
+AS
+BEGIN	
+SELECT NHANVIEN.MANV,NHANVIEN.HOTEN,DUAN.MADA,DUAN.TENDA,THAMGIA.MADA,THAMGIA.MANV
+FROM NHANVIEN,DUAN,THAMGIA
+WHERE THAMGIA.MANV=NHANVIEN.MANV and THAMGIA.MADA=DUAN.MADA and DUAN.TENDA=@TENDA
+END;
+GO
+--test
+PC_TenDoAn 'DuAn1'
+GO
+
+CREATE PROC HH_HoanThanh 
+(@ThoigianKT DATE)
+AS
+BEGIN	
+SELECT NHANVIEN.MANV,NHANVIEN.HOTEN,DUAN.MADA,THAMGIA.MADA,THAMGIA.MANV,THAMGIA.ThoigianKT
+FROM NHANVIEN,DUAN,THAMGIA
+WHERE THAMGIA.MANV=NHANVIEN.MANV and THAMGIA.MADA=DUAN.MADA and THAMGIA.ThoigianKT=@ThoigianKT
+END;
+GO
+--test
+HH_HoanThanh '2021-7-23'
+GO
+
+CREATE TRIGGER TR_KTDONGIA ON DUAN
+FOR INSERT
+AS
+BEGIN
+DECLARE @a INT=0;
+SELECT @a = a.NGANSACH FROM DUAN a
+INNER JOIN inserted b ON a.NGANSACH = b.NGANSACH
+WHERE b.NGANSACH <0
+BEGIN
+PRINT N'Dữ liệu không hợp lệ'
+ROLLBACK TRAN
+END
+END
+GO
+--test
+INSERT INTO DUAN(MADA,TENDA,NGANSACH)
+VALUES ('DA3','DuAn3',-100)
+GO
+
+
+---------------------------------------------------
+bài tập sinh viên 
+
+create database School
+go
+use School
+go
+
+       Create Table LOP
+	(
+		MaLop varchar(10) primary key not null,
+		TenLop nvarchar(50) not null,
+		
+	)
+		go	
+
+		Create Table TINH
+	(
+		MaTinh varchar(10) primary key not null,
+		TenTinh nvarchar(50) not null,
+		
+	)
+		go	
+		
+		Create Table SINHVIEN
+	(
+	MaSv varchar(10) not null,
+	HoTen nvarchar(50) not null,
+	NgaySinh date not null,
+	GioiTinh nvarchar(3) not null,
+	ĐTB nvarchar(10) not null,
+		MaLop varchar(10)  not null,
+		TenLop nvarchar(50) not null,
+
+		Primary key(MaSv)
+		
+		
+	)
+		go	
+
+		alter table SINHVIEN
+		alter column ĐTB float;
+		
+		Alter table  SINHVIEN
+		add constraint FK_HG1_KN
+		foreign key (MaLop)
+		references LOP(MaLop)
+		go
+
+		Alter table TINH
+		add constraint FK_HG1_KN2
+		foreign key (MaTinh)
+		references TINH(MaTinh)
+		go
+
+		
+
+		create proc sp_SiSo3(@ml varchar(10))
+		as
+		begin
+		select  count(SINHVIEN.MaSv) as "Si So", LOP.MaLop from LOP, SINHVIEN
+		where LOP.MaLop = SINHVIEN.MaLop and @ml = LOP.MaLop
+		group by LOP.MaLop
+		end
+		
+		sp_SiSo3 '101'
+
+		create proc sp_Tl (@TenLop nvarchar(50))
+		as
+		delete from SINHVIEN		
+		where @TenLop = SINHVIEN.TenLop
+
+		sp_Tl N'DDH'
+
+		create trigger tr_ql4 on SINHVIEN 
+		for insert
+		as
+		begin 
+		declare @a nvarchar(10) ;
+		select @a = a.ĐTB from SINHVIEN a
+		inner join inserted b on a.ĐTB = b.ĐTB
+		where b.ĐTB < 0 or b.ĐTB > 10
+		begin
+		print 'Error'
+		end
+		rollback tran
+		end
+
+		drop trigger tr_ql
+		drop trigger tr_ql3
+
+		insert into SINHVIEN(MaSv,HoTen,NgaySinh,GioiTinh,ĐTB,MaLop,TenLop)
+		values('105',N'Hải','2009-09-09',N'Nam',1,'101',N'CNTT')
+
+
+---------------------------------------------------------------------------
+bài tâp 1 
+
+create database BT_1
+go
+use BT_1
+go
+
+create table SinhVien(
+ Masv nchar(10),
+ HoTenSV nvarchar(20),
+ NgaySinh date,
+ GioiTinh nchar(10),
+ QueQuan nchar(20)
+ primary key (Masv)
+)
+go 
+create table MonHoc(
+ MaMH nchar(10),
+ TenMH nchar(10),
+ SoTC nchar(10)
+ primary key(MaMH)
+
+)
+go
+create table Diem
+(
+ Masv nchar(10),
+ MaMH nchar(10),
+ DiemThi nchar(8)
+ primary key(Masv,MaMH)
+)
+go
+alter table dbo.Diem add foreign key (Masv) references dbo.SinhVien
+
+alter table dbo.Diem add foreign key (MaMH) references dbo.MonHoc
+
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh,QueQuan) 
+values ('01','Tiến',' Nam','2001-03-02','Thái Bình')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh,QueQuan) 
+values ('02','Đạt',' Nam','2001-03-04','Bình Thuận')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh,QueQuan) 
+values ('03','Hưng',' Nam','2001-03-06','Bắc Bình')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh,QueQuan) 
+values ('04','Hòa',' Nam','2001-03-09','Phú Hưng')
+
+insert into dbo.MonHoc(MaMH,TenMH,SoTC)
+values ('01','Toán','3')
+insert into dbo.MonHoc(MaMH,TenMH,SoTC)
+values ('02','Sinh','2')
+insert into dbo.MonHoc(MaMH,TenMH,SoTC)
+values ('03','Hoa','3')
+insert into dbo.MonHoc(MaMH,TenMH,SoTC)
+values ('04','Anh','3')
+
+insert into dbo.Diem(MaMH,Masv,DiemThi)
+values ('01','01','9')
+insert into dbo.Diem(MaMH,Masv,DiemThi)
+values ('02','02','5')
+insert into dbo.Diem(MaMH,Masv,DiemThi)
+values ('03','03','4')
+insert into dbo.Diem(MaMH,Masv,DiemThi)
+values ('03','03','4')
+
+insert into dbo.Diem(MaMH,Masv,DiemThi)
+values ('04','04','6')
+go
+
+delete from dbo.Diem
+where DiemThi='6';
+go
+select  *from Diem
+go
+
+--- câu 2 
+create proc PC_ThiLai (@MaMH nchar(9))
+as 
+begin
+select*from dbo.Diem ,dbo.MonHoc,dbo.SinhVien
+where Diem.MaMH=MonHoc.MaMH and Diem.Masv=SinhVien.Masv and MonHoc.MaMH in
+(
+select MaMH=@MaMH from MonHoc 
+where Diem.DiemThi<=5 
+)
+end
+go
+
+drop proc PC_ThiLai
+go
+
+PC_ThiLai '03'
+go
+
+-- câu 3 
+create trigger TR_Kiemtra on dbo.Diem
+for insert 
+as 
+begin
+	
+ declare @Number int =0;
+select @Number=count(*) from inserted
+where inserted.DiemThi>0 and inserted.DiemThi<10
+if (@Number=0)
+begin
+print N' Dữ Liệu Không Hợp Lệ'
+Rollback tran
+end
+end
+go
+drop trigger TR_KiemTra
+
+
+----------------------------------------------------------------------------------
+bài tập 3  
+
+create database BT_3
+go
+use BT_3
+
+create table SinhVien(
+ Masv nchar(10),
+ HoTenSV nvarchar(20),
+ NgaySinh date,
+ GioiTinh nchar(10),
+ primary key (Masv)
+)
+ go
+ create table DETAI (
+ MaDT nchar(10),
+ TenDT nchar(10),
+ GVHD nchar(10)
+ primary key (MaDT)
+ )
+ go
+ create table SVDT(
+  MaDT nchar(10),
+   Masv nchar(10),
+   NoiThucTap nchar(10),
+   KetQua nchar(10)
+
+ )
+ go
+
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh) 
+values ('01','Tiến',' Nam','2001-03-02')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh) 
+values ('02','Trần',' Nam','2001-03-09')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh) 
+values ('03','Hà',' Nam','2001-03-04')
+insert into dbo.SinhVien(Masv, HoTenSV,GioiTinh,NgaySinh) 
+values ('04','Hải',' Nam','2001-03-0')
+
+
+insert into dbo.DETAI(MaDT,TenDT,GVHD)
+values ('01','KH','Nga')
+insert into dbo.DETAI(MaDT,TenDT,GVHD)
+values ('02','UDKH','Tuấn')
+insert into dbo.DETAI(MaDT,TenDT,GVHD)
+values ('03','NCKH','Trường')
+insert into dbo.DETAI(MaDT,TenDT,GVHD)
+values ('04','NCYG','Trường')
+insert into dbo.DETAI(MaDT,TenDT,GVHD)
+values ('05','BND','Ngọc')
+
+insert into dbo.SVDT(MaDT,Masv,NoiThucTap,KetQua)
+values ('01','01','CT','Đạt')
+insert into dbo.SVDT(MaDT,Masv,NoiThucTap,KetQua)
+values ('02','02','CP','Đạt')
+insert into dbo.SVDT(MaDT,Masv,NoiThucTap,KetQua)
+values ('03','03','RT','Rớt')
+insert into dbo.SVDT(MaDT,Masv,NoiThucTap,KetQua)
+values ('04','04','','')
+insert into dbo.SVDT(MaDT,Masv,NoiThucTap,KetQua)
+values ('05','05','OP','Đạt')
+go
+delete from dbo.SVDT
+where KetQua='Rớt';
+-- câu 2
+create proc PC_LietKe(@GVHD nchar(10))
+as
+begin
+select * from SinhVien,SVDT,DETAI
+where SinhVien.Masv=SVDT.Masv and  DETAI.MaDT=SVDT.MaDT and DETAI.GVHD=@GVHD
+end
+go
+PC_LietKe 'Nga'
+go
+--câu 3 Tạo thủ tục có tham số vào là @NTT (nơi thực tập) để đưa ra danh sách các sinh viên thực tập tại địa điểm trên.
+create proc PC_LietKeTT(@NTT nchar(10))
+as
+begin
+select * from SinhVien,SVDT,DETAI
+where SinhVien.Masv=SVDT.Masv and  DETAI.MaDT=SVDT.MaDT and SVDT.NoiThucTap=@NTT
+end
+go
+
+--câu 4 Tạo thủ tục để đưa ra danh sách các đề tài chưa từng có sinh viên nào tham gia đăng ký thực tập.
+create proc PC_TT(@NTT nchar(10))
+as
+begin
+select * from SinhVien,SVDT,DETAI
+where SinhVien.Masv=SVDT.Masv and  DETAI.MaDT=SVDT.MaDT and SVDT.NoiThucTap=''
+end
+go
+-- câu 5Tạo Trigger để kiểm tra khi nhập dữ liệu vào bảng SV-ĐT nếu kết quả thực tập <0 thì đưa ra thông báo cảnh báo và bản ghi này không được
+--phép nhập vào bảng dữ liệu. Ngược lại đưa ra thông báo bản ghi được nhập thành công.
+create trigger TR_KiemtraSV on dbo.SVDT
+for insert 
+as 
+begin
+declare @Number int =0;
+select @Number=count(*) from inserted
+where inserted.KetQua='Rớt'
+if (@Number>0)
+begin
+print N' Dữ Liệu Không Hợp Lệ'
+Rollback tran
+end
+end
+go
+drop trigger TR_KiemtraSV 
+
+-------------------------------------------------------------------------------------------
+bài tập khách hàng 
+
+
+
+create database Khang
+go
+use Khang
+go
+
+Alter table HoaDon
+		add constraint FK_HG8_MAKH
+		foreign key (MaKH)
+		references DMKhach(MaKH)
+		go
+
+Alter table ChiTiet
+		add constraint FK_HG8_CT
+		foreign key (SoHD)
+		references HoaDon(SoHD)
+		go
+
+		Alter table ChiTiet
+		add constraint FK_HG8_CT2
+		foreign key (MaH)
+		references DMHang(MaH)
+		go
+
+
+		--Cau 2
+		create proc sp_selec3(@SoHD int)
+		as
+		begin
+		select * from ChiTiet
+		where SoHD = @SoHD
+		end
+		go
+
+		sp_selec3 10
+		 
+		 --cau 3
+		 create proc sp_ngay1(@Ngay date)
+		 as
+		 begin
+		select * from  HoaDon
+		where  HoaDon.NgayHD in
+		(
+		select NgayHD = @Ngay from HoaDon
+		
+		)
+		end
+		go
+
+		sp_ngay1 '2003-09-09'
+		 
+		 create trigger tr_kiemtra on ChiTiet
+		 for begin insert 
+		 as
+		 if( (select SoLuong from ChiTiet ct inner join INSERTED b on
+		 ct.SoLuong = b.SoLuong) < 0)
+		 begin
+		 print 'Dữ liệu ko hợp lệ'
+		 rollback tran
+		 end
+
+
+-------------------------------------------------------------------------------------------------
+bài tập hợp đồng 
+
+
+create database HDong
+go
+use HDong
+go
+
+Alter table HopDong
+		add constraint FK_HG8_hd
+		foreign key (Manha)
+		references Nha(Manha)
+		go
+
+		Alter table HopDong
+		add constraint FK_HG8_hd2
+		foreign key (MaKH)
+		references Khach(MaKH)
+		go
+
+		--cau 2
+		create proc sp_check1(@ngaykt date)
+		as
+		begin	
+		(select * from Khach, HopDong
+		where Khach.MaKH = HopDong.MaKH and ngaykt > @ngaykt)
+		end
+
+		sp_check1 '2006-01-01'
+
+	    --cau 3
+		create proc sp_nha1
+		as
+		begin
+		select * from Nha
+		where not exists
+		(select Manha from HopDong
+		where Nha.Manha = HopDong.Manha)
+		end
+
+		sp_nha1
+
+		--cau 4
+
+		create proc sp_check2(@ngaybd date)
+		as
+		begin	
+		(select * from Khach, HopDong
+		where Khach.MaKH = HopDong.MaKH and ngaybd = @ngaybd)
+		end
+
+		sp_check2 '2003-03-03'
+
+		--cau 5
+		create proc sp_thuenha1(@b1 real, @b2 real)
+		as
+		begin
+		declare @c  nvarchar(50);
+		--declare @d = nvarchar(50);
+		set @c = 'Cho thuê nhà trọ tại' ;
+		select Tenchunha, Manha,Diachinha from Nha
+		where(@b1 < Nha.Giathue and @b2 > Nha.Giathue)
+		end
+
+		sp_thuenha1 1000,4000
+
+
+------------------------------------------------------------------------------------------------------
+bài tập 6 
+
+﻿create database BT_6
+go 
+
+create table Sach(
+MaS nchar(10),
+TenS nchar(10),
+NhaXB nchar(10),
+NamXB nchar(10),
+TenTG nchar(10),
+ primary key (MaS)
+)
+go 
+create table DocGia (
+MaDG nchar(10),
+TenDG nchar(10),
+DiachiDG nchar(10)
+ primary key (MaDG)
+)
+create table MuonTra(
+MaDG nchar(10),
+MaS nchar(10),
+NgayMuon nchar(10),
+SoLuong nchar(10),
+NgayHenTra nchar(10),
+NgayTra nchar(10),
+ primary key (MaDG,MaS)
+ )
+ go
+ alter table dbo.MuonTra add foreign key (MaS) references dbo.Sach
+  alter table dbo.MuonTra add foreign key (MaDG) references dbo.DocGia
+
+  insert into dbo.DocGia(MaDG,TenDG,DiachiDG)
+values ('01','Duy','99CB')
+  insert into dbo.DocGia(MaDG,TenDG,DiachiDG)
+values ('02','Hai','78BD')
+  insert into dbo.DocGia(MaDG,TenDG,DiachiDG)
+values ('03','Hien','10CE')
+
+  insert into dbo.Sach(MaS,TenS,TenTG,NhaXB,NamXB)
+values ('01','KhoaHoc','MaiNoc','ToKy','1986')
+  insert into dbo.Sach(MaS,TenS,TenTG,NhaXB,NamXB)
+values ('02','GDCD','CuTi','TeeKy','1996')
+  insert into dbo.Sach(MaS,TenS,TenTG,NhaXB,NamXB)
+values ('03','TuNhien','BOM','ToKy','1936')
+
+  insert into dbo.MuonTra(MaDG,MaS,NgayMuon,NgayTra,NgayHenTra,SoLuong)
+values ('01','01','7','12','14/03','03')
+  insert into dbo.MuonTra(MaDG,MaS,NgayMuon,NgayTra,NgayHenTra,SoLuong)
+values ('02','02','9','21','24/03','06')
+  insert into dbo.MuonTra(MaDG,MaS,NgayMuon,NgayTra,NgayHenTra,SoLuong)
+values ('03','03','10','30','30/03','05')
+go 
+drop table MuonTra
+-- câu 2
+create proc PC_DocGia (@MaDG nchar(10))
+as
+begin
+select NgayMuon from MuonTra
+where MaDG=@MaDG
+end 
+go 
+PC_DocGia '01'
+go
+--câu 3 
+
+create proc PC_NgayMuon (@NgayMuon nchar(10))
+as
+begin
+select TenDG from MuonTra,DocGia
+where MuonTra.MaDG=DocGia.MaDG and NgayMuon=@NgayMuon
+end 
+go 
+PC_NgayMuon '26/03'
+go
+
+-- câu 4
+ create proc PC_HenTra(@Ngay nchar(10))
+ as
+ begin 
+  declare @Number int =0;
+  set @Number
+	select * from dbo.MuonTra
+	where @
+	 if(@Number<0)
+	 begin
+	 print N'Den Ngay Tra '
+	 Rollback tran--hủy bỏ thay đổi 
+	 end
+
+ end
+
+ go 
+ 
+ --câu 5
+ create trigger TR_MuonTra on dbo.MuonTra
+ for insert
+ as
+ begin
+ declare @Number int =0;
+	 select @Number =COUNT(*) from inserted
+	 where SoLuong>0
+	 if(@Number>0)
+	 begin
+	 print N'Không Được '
+	 Rollback tran--hủy bỏ thay đổi 
+	 end
+	 end
