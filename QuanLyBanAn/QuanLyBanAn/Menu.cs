@@ -30,6 +30,7 @@ namespace QuanLyBanAn
         private void guna2Button2_Click(object sender, EventArgs e)
         {
             open(new Form2());
+            
         }
 
         private void guna2Button1_Click(object sender, EventArgs e)
@@ -59,12 +60,27 @@ namespace QuanLyBanAn
 
         private void guna2Button3_Click_1(object sender, EventArgs e)
         {
-            open(new Form4());
+            
         }
 
         private void guna2Button4_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void guna2PictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2Button4_Click_1(object sender, EventArgs e)
+        {
+            open(new Form4());
+        }
+
+        private void guna2Button3_Click_2(object sender, EventArgs e)
+        {
+            open(new Form5());
         }
     }
 }

@@ -10,19 +10,14 @@ using System.Windows.Forms;
 
 namespace QuanLyBanAn
 {
-    public partial class Form2 : Form
+    public partial class Form5 : Form
     {
-        public Form2()
+        public Form5()
         {
             InitializeComponent();
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form2_Load(object sender, EventArgs e)
+        private void guna2Button3_Click(object sender, EventArgs e)
         {
 
         }
